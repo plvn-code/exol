@@ -25,4 +25,4 @@
 3. Contacts: Telegram support, e-mail, domain (placeholders in src/lib/site.ts).
 4. Legal entity / jurisdiction for Terms & AML texts; cash cities list.
 5. Add RUB or other currencies?
-6. GitHub repo + Vercel — not created yet (ask first).
+6. GitHub: plvn-code/exol (main, pushed 2026-11-20). Vercel — not yet (ask first).
