@@ -3,9 +3,9 @@ import { FaqList } from "@/components/Sections";
 import { FAQ } from "@/lib/faq";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = { title: "Вопросы и ответы", description: "Как работает обмен на Exol Swap: курсы, сроки, лимиты, вывод на карту, AML и возвраты." };
+export const metadata: Metadata = { title: "FAQ", description: "How Exol Swap works: rates, timing, limits, card payouts, AML and refunds." };
 
-const GROUPS = ["Обмен", "Вывод в фиат", "Безопасность"] as const;
+const GROUPS = ["Swapping", "Cashing out", "Security"] as const;
 
 export default function FaqPage() {
   return (
@@ -13,9 +13,9 @@ export default function FaqPage() {
       <section className="page-hero">
         <div className="wrap">
           <span className="kicker">FAQ</span>
-          <h1>Вопросы и <span className="grad">ответы</span></h1>
+          <h1>Questions & <span className="grad">answers</span></h1>
           <p>
-            Не нашли нужное — напишите в Telegram <a className="grad" href={SITE.telegram} target="_blank" rel="noopener noreferrer">{SITE.telegramHandle}</a>, отвечаем круглосуточно.
+            Didn’t find what you need? Message us on Telegram at <a className="grad" href={SITE.telegram} target="_blank" rel="noopener noreferrer">{SITE.telegramHandle}</a> — we reply around the clock.
           </p>
         </div>
       </section>

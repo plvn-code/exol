@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import Legal from "@/components/Legal";
 
-export const metadata: Metadata = { title: "Политика конфиденциальности" };
+export const metadata: Metadata = { title: "Privacy Policy" };
 
 export default function Page() {
   return (
     <Legal
-      kicker="Документы"
-      title="Конфиденциальность"
-      intro="Мы собираем минимум данных, необходимых для выполнения заявки."
+      kicker="Legal"
+      title="Privacy"
+      intro="We collect only the data needed to complete your order."
       sections={[
-        { h: "Что мы храним", p: ["Номер заявки, адреса и хеши транзакций, сумму и курс. Если вы указали e-mail — для уведомлений о статусе. Номер карты и имя получателя передаются оператору только для выплаты; на сайте сохраняются лишь последние 4 цифры."] },
-        { h: "Чего мы не храним", p: ["CVV, срок действия карты, пароли и seed-фразы — мы их никогда не запрашиваем. Если кто-то просит их от имени Exol Swap — это мошенники."] },
-        { h: "Срок хранения", p: ["Данные заявок хранятся столько, сколько требует AML-законодательство юрисдикции компании, затем удаляются."] },
-        { h: "Cookies", p: ["Сайт не использует рекламные и аналитические cookies. Список ваших заявок хранится в локальном хранилище браузера и не передаётся третьим лицам."] },
+        { h: "What we keep", p: ["Order number, addresses and transaction hashes, amount and rate. Your e-mail, if you entered one, for status updates. The card number and recipient name go to the operator only to make the payout; the site keeps just the last 4 digits."] },
+        { h: "What we never keep", p: ["CVV codes, card expiry dates, passwords and seed phrases — we never ask for them. If anyone asks for them on behalf of Exol Swap, it is a scam."] },
+        { h: "Retention", p: ["Order data is kept for as long as the AML laws of the company’s jurisdiction require, then deleted."] },
+        { h: "Cookies", p: ["The site uses no advertising or analytics cookies. Your list of orders is stored in your browser’s local storage and is not shared with third parties."] },
       ]}
     />
   );

@@ -30,9 +30,9 @@ export function LiveBadge() {
   return (
     <span className="badge">
       <span className={"pulse" + (r.live ? "" : " off")} aria-hidden />
-      {r.live ? `Курсы live · ${age < 60 ? age + " с" : Math.round(age / 60) + " мин"} назад` : "Курсы на сегодня"}
+      {r.live ? `Live rates · ${age < 60 ? age + "s" : Math.round(age / 60) + " min"} ago` : "Today's rates"}
       <span className="badge-sep" />
-      {COINS.length} монет · {FIATS.length} валют
+      {COINS.length} coins · {FIATS.length} currencies
     </span>
   );
 }

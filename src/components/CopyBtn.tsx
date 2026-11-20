@@ -15,7 +15,7 @@ export default function CopyBtn({ text }: { text: string }) {
         });
       }}
     >
-      {ok ? "Скопировано" : "Копировать"}
+      {ok ? "Copied" : "Copy"}
     </button>
   );
 }

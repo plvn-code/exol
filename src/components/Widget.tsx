@@ -141,23 +141,23 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
   const destErr = (() => {
     const v = dest.trim();
     if (tab === "crypto") {
-      if (!v) return "Укажите адрес";
-      return validAddress(toNetObj.addr, v) ? "" : `Это не похоже на адрес ${to} в сети ${toNetObj.name}`;
+      if (!v) return "Enter the address";
+      return validAddress(toNetObj.addr, v) ? "" : `This doesn't look like a ${to} address on ${toNetObj.name}`;
     }
-    if (meth === "card") return luhn(v) ? "" : "Проверьте номер карты";
-    if (meth === "iban") return validIban(v) ? "" : "Проверьте IBAN";
-    if (meth === "wise") return validEmail(v) || /^@?[a-z0-9_.]{3,30}$/i.test(v) ? "" : "Укажите e-mail или @тег";
-    return v.replace(/\D/g, "").length >= 9 || /^@[a-z0-9_]{4,}$/i.test(v) ? "" : "Телефон или @telegram для связи";
+    if (meth === "card") return luhn(v) ? "" : "Check the card number";
+    if (meth === "iban") return validIban(v) ? "" : "Check the IBAN";
+    if (meth === "wise") return validEmail(v) || /^@?[a-z0-9_.]{3,30}$/i.test(v) ? "" : "Enter an e-mail or @tag";
+    return v.replace(/\D/g, "").length >= 9 || /^@[a-z0-9_]{4,}$/i.test(v) ? "" : "Phone or @telegram to reach you";
   })();
-  const holderErr = tab === "fiat" && meth !== "cash" && holder.trim().split(/\s+/).length < 2 ? "Укажите имя и фамилию получателя" : "";
-  const refundErr = refund.trim() && !validAddress(fromNetObj.addr, refund) ? `Неверный адрес ${from}` : "";
-  const emailErr = email.trim() && !validEmail(email) ? "Неверный e-mail" : "";
+  const holderErr = tab === "fiat" && meth !== "cash" && holder.trim().split(/\s+/).length < 2 ? "Enter the recipient's first and last name" : "";
+  const refundErr = refund.trim() && !validAddress(fromNetObj.addr, refund) ? `Invalid ${from} address` : "";
+  const emailErr = email.trim() && !validEmail(email) ? "Invalid e-mail" : "";
   const formOk = !destErr && !holderErr && !refundErr && !emailErr && agree;
 
   const maskDest = () => {
     const v = dest.trim();
     if (tab === "crypto") return memo.trim() ? `${v} · memo ${memo.trim()}` : v;
-    if (meth === "card") return `${(cur === "UAH" && bankName(bank)) || cardBrand(v) || "Карта"} •••• ${v.replace(/\D/g, "").slice(-4)} · ${holder.trim()}`;
+    if (meth === "card") return `${(cur === "UAH" && bankName(bank)) || cardBrand(v) || "Card"} •••• ${v.replace(/\D/g, "").slice(-4)} · ${holder.trim()}`;
     if (meth === "iban") return `${v.replace(/\s/g, "").slice(0, 4)} •••• ${v.replace(/\s/g, "").slice(-4)} · ${holder.trim()}`;
     if (meth === "wise") return `${v} · ${holder.trim()}`;
     return `${city} · ${v}`;
@@ -235,7 +235,7 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
   };
 
   const errLine =
-    q.error === "min" ? `Минимум ${amt(q.minIn)} ${from}` : q.error === "max" ? `Максимум ${amt(q.maxIn)} ${from}` : q.error ?? "";
+    q.error === "min" ? `Minimum ${amt(q.minIn)} ${from}` : q.error === "max" ? `Maximum ${amt(q.maxIn)} ${from}` : q.error ?? "";
 
   return (
     <div className="widget" id={id}>
@@ -245,7 +245,7 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
           <span className="w-tabs-ind" aria-hidden />
           <button role="tab" aria-selected={tab === "crypto"} onClick={() => { setTab("crypto"); setStage("quote"); }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 7h11l-3-3M17 17H6l3 3" /></svg>
-            Крипто ⇄ Крипто
+            Crypto ⇄ Crypto
           </button>
           <button role="tab" aria-selected={tab === "fiat"} onClick={() => {
             setTab("fiat");
@@ -258,7 +258,7 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
             }
           }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="6" width="18" height="12" rx="2.5" /><path d="M3 10h18" /></svg>
-            Вывод в фиат
+            Crypto → Fiat
           </button>
         </div>
 
@@ -267,17 +267,17 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
             <div className="w-mode">
               <div className="seg" data-on={mode}>
                 <span className="seg-ind" aria-hidden />
-                <button onClick={() => setMode("float")} aria-pressed={mode === "float"}>Плавающий</button>
-                <button onClick={() => setMode("fixed")} aria-pressed={mode === "fixed"}>Фиксированный</button>
+                <button onClick={() => setMode("float")} aria-pressed={mode === "float"}>Floating</button>
+                <button onClick={() => setMode("fixed")} aria-pressed={mode === "fixed"}>Fixed</button>
               </div>
               <span className="w-mode-hint">
-                {mode === "float" ? "Лучший курс на момент поступления" : `Курс закреплён на ${FIXED_MINUTES} минут`}
+                {mode === "float" ? "Best rate when funds arrive" : `Rate locked for ${FIXED_MINUTES} minutes`}
               </span>
             </div>
 
-            <div className={"w-field" + (q.error && q.error !== "Выберите разные монеты" && amount > 0 ? " bad" : "")}>
+            <div className={"w-field" + (q.error && q.error !== "Pick two different coins" && amount > 0 ? " bad" : "")}>
               <div className="w-label">
-                <span>Отдаёте</span>
+                <span>You send</span>
                 <span className="mono dim">≈ {usd(q.usd || amount * (r.prices[from] ?? 0))}</span>
               </div>
               <div className="w-row">
@@ -286,7 +286,7 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
                   inputMode="decimal"
                   value={amountStr}
                   onChange={(e) => setAmountStr(e.target.value.replace(/[^\d.,]/g, ""))}
-                  aria-label="Сумма"
+                  aria-label="Amount"
                   placeholder="0"
                 />
                 <button className="asset-btn" onClick={() => setPicker("from")}>
@@ -307,7 +307,7 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
               {errLine && amount > 0 && <div className="w-err">{errLine}</div>}
             </div>
 
-            <button className="w-flip" onClick={flip} aria-label="Поменять местами" style={{ transform: `rotate(${spin * 180}deg)` }} disabled={tab === "fiat"}>
+            <button className="w-flip" onClick={flip} aria-label="Swap direction" style={{ transform: `rotate(${spin * 180}deg)` }} disabled={tab === "fiat"}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 {tab === "crypto" ? <path d="M8 4v15m0 0l-3.5-3.5M8 19l3.5-3.5M16 20V5m0 0l-3.5 3.5M16 5l3.5 3.5" /> : <path d="M12 4v16m0 0l-5-5m5 5l5-5" />}
               </svg>
@@ -315,12 +315,12 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
 
             <div className="w-field to">
               <div className="w-label">
-                <span>{tab === "crypto" ? "Получаете" : "Получаете · " + m.short}</span>
-                <span className="mono dim">{mode === "fixed" ? "фикс" : "≈ ориентировочно"}</span>
+                <span>{tab === "crypto" ? "You get" : "You get · " + m.short}</span>
+                <span className="mono dim">{mode === "fixed" ? "fixed" : "≈ estimated"}</span>
               </div>
               <div className="w-row">
                 <output className="w-amount out">
-                  <Num value={q.out} format={(n) => (tab === "crypto" ? amt(n) : n.toLocaleString("ru-RU", { maximumFractionDigits: 2, minimumFractionDigits: 2 }).replace(/ /g, " "))} />
+                  <Num value={q.out} format={(n) => (tab === "crypto" ? amt(n) : n.toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 }))} />
                 </output>
                 {tab === "crypto" ? (
                   <button className="asset-btn" onClick={() => setPicker("to")}>
@@ -357,7 +357,7 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
                 </div>
               )}
               {tab === "fiat" && meth === "card" && cur === "UAH" && (
-                <div className="banks" role="radiogroup" aria-label="Банк получателя">
+                <div className="banks" role="radiogroup" aria-label="Recipient bank">
                   {UA_BANKS.map((b) => (
                     <button key={b.id} role="radio" aria-checked={bank === b.id} className={"bank" + (bank === b.id ? " on" : "")} onClick={() => setBank(b.id)}>
                       <span className="bank-mark" style={{ background: b.bg, color: b.fg }}>{b.mark}</span>
@@ -370,32 +370,32 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
 
             <dl className="w-meta">
               <div>
-                <dt>Курс</dt>
+                <dt>Rate</dt>
                 <dd className="mono">
                   1 {from} ≈ {tab === "crypto" ? `${amt(q.rate)} ${to}` : money(q.rate, f.sign)}
                 </dd>
               </div>
               <div>
-                <dt>{tab === "crypto" ? "Комиссия сети" : "Комиссия"}</dt>
+                <dt>{tab === "crypto" ? "Network fee" : "Fee"}</dt>
                 <dd className="mono">{tab === "crypto" ? usd(toNetObj.feeUsd) : `${((m.fee + (mode === "fixed" ? 0.005 : 0)) * 100).toFixed(1)}%${m.fixedUsd ? " + " + usd(m.fixedUsd) : ""}`}</dd>
               </div>
               <div>
-                <dt>Время</dt>
-                <dd>{tab === "crypto" ? "2–15 минут" : m.eta}</dd>
+                <dt>Time</dt>
+                <dd>{tab === "crypto" ? "2–15 minutes" : m.eta}</dd>
               </div>
             </dl>
 
             <button className="btn btn-primary w-go" disabled={!q.ok} onClick={goDetails}>
-              {tab === "crypto" ? "Обменять" : "Вывести на " + (meth === "card" ? (cur === "UAH" && bank !== "other" ? "карту " + bankName(bank) : "карту") : meth === "cash" ? "наличные" : m.short)}
+              {tab === "crypto" ? "Swap now" : "Cash out to " + (meth === "card" ? (cur === "UAH" && bank !== "other" ? bankName(bank) + " card" : "card") : meth === "cash" ? "cash" : m.short)}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M5 12h14m-5-5l5 5-5 5" /></svg>
             </button>
-            <p className="w-foot">Без регистрации · Без скрытых комиссий · Поддержка 24/7</p>
+            <p className="w-foot">No sign-up · No hidden fees · 24/7 support</p>
           </div>
         ) : (
           <div className="w-stage details" key="d">
             <button className="w-back" onClick={() => setStage("quote")}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M19 12H5m5-5l-5 5 5 5" /></svg>
-              Изменить сумму
+              Change amount
             </button>
             <div className="w-sum">
               <span><CoinIcon sym={from} size={22} /> <b className="mono">{amt(amount)}</b> {from}</span>
@@ -409,75 +409,75 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
             {dep ? (
               <div className="w-dep">
                 <span className="w-dep-label">
-                  Отправьте <b className="mono">{amt(amount)} {from}</b> · сеть {fromNetObj.name}
+                  Send <b className="mono">{amt(amount)} {from}</b> · {fromNetObj.name} network
                 </span>
                 <div className="w-dep-addr">
                   <code>{dep.address}</code>
                   <CopyBtn text={dep.address} />
                 </div>
-                <small>Только {from} в сети {fromNetObj.name.replace(/ \(.+\)/, "")}. Сначала создайте заявку — так мы поймём, куда выплатить.</small>
+                <small>{from} on {fromNetObj.name.replace(/ \(.+\)/, "")} only. Create the order first so we know where to pay you.</small>
               </div>
             ) : (
               <div className="w-dep muted">
-                <small>Адрес для {from} ({fromNetObj.name}) оператор пришлёт после создания заявки.</small>
+                <small>The operator will send the {from} ({fromNetObj.name}) deposit address after you create the order.</small>
               </div>
             )}
 
             {tab === "crypto" ? (
               <>
-                <Field label={`Адрес ${to} · ${toNetObj.name}`} err={tried ? destErr : ""}>
+                <Field label={`Your ${to} address · ${toNetObj.name}`} err={tried ? destErr : ""}>
                   <input value={dest} onChange={(e) => setDest(e.target.value)} placeholder={demoHint(toNetObj.addr)} spellCheck={false} autoComplete="off" />
                 </Field>
                 {toNetObj.memo && (
-                  <Field label="Memo / Tag (если требует биржа)">
-                    <input value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="Необязательно" />
+                  <Field label="Memo / Tag (if your exchange requires it)">
+                    <input value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="Optional" />
                   </Field>
                 )}
               </>
             ) : meth === "card" ? (
               <>
-                <Field label={cur === "UAH" && bank !== "other" ? `Номер карты ${bankName(bank)}` : "Номер карты"} err={tried ? destErr : ""} badge={cardBrand(dest)}>
+                <Field label={cur === "UAH" && bank !== "other" ? `${bankName(bank)} card number` : "Card number"} err={tried ? destErr : ""} badge={cardBrand(dest)}>
                   <input value={dest} onChange={(e) => setDest(formatCard(e.target.value))} inputMode="numeric" placeholder="0000 0000 0000 0000" autoComplete="off" />
                 </Field>
-                <Field label="Имя и фамилия получателя" err={tried ? holderErr : ""}>
-                  <input value={holder} onChange={(e) => setHolder(e.target.value)} placeholder={cur === "UAH" ? "Олена Коваль" : "Ivan Petrenko"} autoComplete="off" />
+                <Field label="Recipient full name" err={tried ? holderErr : ""}>
+                  <input value={holder} onChange={(e) => setHolder(e.target.value)} placeholder={"Olena Koval"} autoComplete="off" />
                 </Field>
               </>
             ) : meth === "iban" ? (
               <>
-                <Field label="IBAN получателя" err={tried ? destErr : ""}>
+                <Field label="Recipient IBAN" err={tried ? destErr : ""}>
                   <input value={dest} onChange={(e) => setDest(e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g, ""))} placeholder="DE89 3704 0044 0532 0130 00" autoComplete="off" />
                 </Field>
-                <Field label="Получатель (как в банке)" err={tried ? holderErr : ""}>
+                <Field label="Account holder (as at the bank)" err={tried ? holderErr : ""}>
                   <input value={holder} onChange={(e) => setHolder(e.target.value)} placeholder="Ivan Petrenko" />
                 </Field>
               </>
             ) : meth === "wise" ? (
               <>
-                <Field label="E-mail или @тег в Wise / Revolut" err={tried ? destErr : ""}>
+                <Field label="Wise / Revolut e-mail or @tag" err={tried ? destErr : ""}>
                   <input value={dest} onChange={(e) => setDest(e.target.value)} placeholder="name@mail.com" />
                 </Field>
-                <Field label="Имя получателя" err={tried ? holderErr : ""}>
+                <Field label="Recipient name" err={tried ? holderErr : ""}>
                   <input value={holder} onChange={(e) => setHolder(e.target.value)} placeholder="Ivan Petrenko" />
                 </Field>
               </>
             ) : (
               <>
-                <Field label="Город выдачи">
+                <Field label="Pick-up city">
                   <select value={city} onChange={(e) => setCity(e.target.value)}>
                     {CASH_CITIES.map((c) => <option key={c}>{c}</option>)}
                   </select>
                 </Field>
-                <Field label="Телефон или @telegram" err={tried ? destErr : ""}>
+                <Field label="Phone or @telegram" err={tried ? destErr : ""}>
                   <input value={dest} onChange={(e) => setDest(e.target.value)} placeholder="@username" />
                 </Field>
               </>
             )}
 
-            <Field label={`Адрес возврата ${from} (необязательно)`} err={refundErr}>
-              <input value={refund} onChange={(e) => setRefund(e.target.value)} placeholder="Если обмен не состоится" spellCheck={false} />
+            <Field label={`${from} refund address (optional)`} err={refundErr}>
+              <input value={refund} onChange={(e) => setRefund(e.target.value)} placeholder="In case the swap fails" spellCheck={false} />
             </Field>
-            <Field label="E-mail для статуса (необязательно)" err={emailErr}>
+            <Field label="E-mail for status updates (optional)" err={emailErr}>
               <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@mail.com" inputMode="email" />
             </Field>
 
@@ -485,22 +485,22 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
               <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
               <span className="check-box" aria-hidden />
               <span>
-                Согласен с <Link href="/terms">условиями</Link> и <Link href="/aml">AML/KYC-политикой</Link>
+                I agree to the <Link href="/terms">Terms</Link> and <Link href="/aml">AML/KYC Policy</Link>
               </span>
             </label>
 
             <button className="btn btn-primary w-go" onClick={submit} disabled={sending}>
-              {sending ? "Отправляем…" : "Создать заявку"}
+              {sending ? "Sending…" : "Create order"}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M5 12l5 5L20 7" /></svg>
             </button>
-            {tab === "fiat" && <p className="w-foot">Номер карты получает только оператор для выплаты. CVV и срок действия не нужны — никому их не сообщайте.</p>}
+            {tab === "fiat" && <p className="w-foot">Only the operator sees your card number, and only to pay you. We never need your CVV or expiry date — never share them.</p>}
           </div>
         )}
       </div>
 
-      {picker === "from" && <Picker kind="coin" title="Вы отдаёте" value={from} onPick={pickFrom} onClose={closePicker} />}
-      {picker === "to" && <Picker kind="coin" title="Вы получаете" value={to} onPick={pickTo} onClose={closePicker} />}
-      {picker === "cur" && <Picker kind="fiat" title="Валюта выплаты" value={cur} onPick={(c) => { setCur(c); setPicker(null); }} onClose={closePicker} />}
+      {picker === "from" && <Picker kind="coin" title="You send" value={from} onPick={pickFrom} onClose={closePicker} />}
+      {picker === "to" && <Picker kind="coin" title="You get" value={to} onPick={pickTo} onClose={closePicker} />}
+      {picker === "cur" && <Picker kind="fiat" title="Payout currency" value={cur} onPick={(c) => { setCur(c); setPicker(null); }} onClose={closePicker} />}
     </div>
   );
 }
@@ -520,6 +520,6 @@ function Field({ label, err, badge, children }: { label: string; err?: string; b
 
 function demoHint(kind: string): string {
   return (
-    { btc: "bc1q…", evm: "0x…", trx: "T…", sol: "Адрес Solana", ton: "UQ…", xrp: "r…", ltc: "ltc1q…", doge: "D…", xmr: "4…", ada: "addr1…", dot: "1…", xlm: "G…", near: "name.near", apt: "0x…", atom: "cosmos1…", bch: "bitcoincash:q…", ln: "Invoice lnbc… или name@wallet", zec: "t1…" } as Record<string, string>
-  )[kind] ?? "Адрес";
+    { btc: "bc1q…", evm: "0x…", trx: "T…", sol: "Solana address", ton: "UQ…", xrp: "r…", ltc: "ltc1q…", doge: "D…", xmr: "4…", ada: "addr1…", dot: "1…", xlm: "G…", near: "name.near", apt: "0x…", atom: "cosmos1…", bch: "bitcoincash:q…", ln: "Invoice lnbc… or name@wallet", zec: "t1…" } as Record<string, string>
+  )[kind] ?? "Address";
 }

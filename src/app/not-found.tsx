@@ -5,8 +5,8 @@ export default function NotFound() {
     <section className="nf">
       <div>
         <b className="grad">404</b>
-        <p>Такой страницы нет — но обменник на месте.</p>
-        <Link href="/" className="btn btn-primary">На главную</Link>
+        <p>This page doesn’t exist — but the exchange is right here.</p>
+        <Link href="/" className="btn btn-primary">Back to home</Link>
       </div>
     </section>
   );

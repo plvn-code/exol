@@ -12,6 +12,10 @@
 - Orders POST to /api/order → Telegram bot (env vars not set yet → order page asks the client to message @exolswap_support).
 - Removed demo simulation and random addresses; «Я отправил(а)» + optional TxID notifies the operator.
 
+## 2026-11-20 (3)
+- Whole site translated to English (user chose English only, no switcher); /kursy renamed /rates with a permanent redirect; en-US number format; fonts latin-only.
+- Fixed «-0» flash in hero counters (they now render the real value server-side).
+
 ## Open questions for the owner
 0. **Telegram bot token + chat id** for order delivery, and the real support @username (placeholder @exolswap_support).
 0b. Wallets for other coins (BTC, ETH, USDT ERC-20/BEP-20…) — now the operator gives them manually.
@@ -20,5 +24,5 @@
 2. Real fees, spreads and limits (now: float 0.5%, fixed 1%, card 1.5% + $1, IBAN 0.8% + $3, Wise 1%, cash 2%).
 3. Contacts: Telegram support, e-mail, domain (placeholders in src/lib/site.ts).
 4. Legal entity / jurisdiction for Terms & AML texts; cash cities list.
-5. Add RUB or other currencies? English version?
+5. Add RUB or other currencies?
 6. GitHub repo + Vercel — not created yet (ask first).

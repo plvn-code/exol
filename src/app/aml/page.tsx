@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import Legal from "@/components/Legal";
 
-export const metadata: Metadata = { title: "AML / KYC политика" };
+export const metadata: Metadata = { title: "AML / KYC Policy" };
 
 export default function Page() {
   return (
     <Legal
-      kicker="Комплаенс"
-      title="AML / KYC политика"
-      intro="Как Exol Swap проверяет транзакции и когда может попросить подтвердить личность."
+      kicker="Compliance"
+      title="AML / KYC Policy"
+      intro="How Exol Swap screens transactions and when we may ask you to verify your identity."
       sections={[
-        { h: "Зачем нужна проверка", p: ["Мы обязаны не допускать отмывания средств, финансирования терроризма и обхода санкций. Каждая входящая транзакция автоматически проверяется AML-сканером по публичным базам рискованных адресов."] },
-        { h: "Когда требуется верификация", p: ["Транзакция получила высокий риск-скор (связь с даркнет-рынками, миксерами, взломами, санкционными адресами).", "Сумма вывода в фиат превышает $10 000 за сутки или $15 000 одним переводом на IBAN.", "Выдача наличных — паспорт при встрече с кассиром."] },
-        { h: "Как проходит проверка", p: ["Специалист комплаенса пишет на e-mail или в Telegram из заявки. Обычно достаточно документа, удостоверяющего личность, и короткого пояснения о происхождении средств. Срок — до 30 минут в рабочее время."] },
-        { h: "Если проверка не пройдена", p: ["Средства возвращаются на адрес отправителя за вычетом комиссии сети, если это не запрещено законом или требованием уполномоченного органа."] },
-        { h: "Ограничения по странам", p: ["Сервис не обслуживает резидентов и лиц из юрисдикций под всеобъемлющими санкциями. Список актуализируется юристом компании."] },
+        { h: "Why we screen", p: ["We must prevent money laundering, terrorist financing and sanctions evasion. Every incoming transaction is automatically checked by an AML scanner against public databases of high-risk addresses."] },
+        { h: "When verification is required", p: ["A transaction gets a high risk score (links to darknet markets, mixers, hacks or sanctioned addresses).", "Fiat payouts exceed $10,000 per day or $15,000 in a single IBAN transfer.", "Cash pick-up — ID is checked when you meet the cashier."] },
+        { h: "How the check works", p: ["A compliance specialist contacts you by the e-mail or Telegram in your order. An ID document and a short explanation of where the funds came from are usually enough. It takes up to 30 minutes during business hours."] },
+        { h: "If the check is not passed", p: ["Funds are returned to the sender address minus the network fee, unless this is prohibited by law or by an order of a competent authority."] },
+        { h: "Restricted countries", p: ["The service is not available to residents of, or persons in, jurisdictions under comprehensive sanctions. The list is kept up to date by the company’s lawyer."] },
       ]}
     />
   );

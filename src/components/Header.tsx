@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { Logo } from "./Brand";
 
 const NAV = [
-  { href: "/#swap", label: "Обмен" },
-  { href: "/fiat", label: "Вывод на карту" },
-  { href: "/kursy", label: "Курсы" },
-  { href: "/#how", label: "Как это работает" },
+  { href: "/#swap", label: "Swap" },
+  { href: "/fiat", label: "Cash out to card" },
+  { href: "/rates", label: "Rates" },
+  { href: "/#how", label: "How it works" },
   { href: "/faq", label: "FAQ" },
 ];
 
@@ -43,10 +43,10 @@ export default function Header() {
   return (
     <header className={"hdr" + (scrolled ? " scrolled" : "") + (open ? " open" : "")}>
       <div className="hdr-in wrap">
-        <Link href="/" aria-label="Exol Swap — на главную" className="hdr-logo">
+        <Link href="/" aria-label="Exol Swap — home" className="hdr-logo">
           <Logo />
         </Link>
-        <nav className="hdr-nav" aria-label="Основное меню">
+        <nav className="hdr-nav" aria-label="Main menu">
           {NAV.map((n) => (
             <Link key={n.href} href={n.href} className={path === n.href ? "on" : ""}>
               {n.label}
@@ -57,18 +57,18 @@ export default function Header() {
           <div className={"track" + (track ? " open" : "")}>
             <button className="btn btn-ghost sm" onClick={() => setTrack(!track)} aria-expanded={track}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
-              <span>Статус заявки</span>
+              <span>Track order</span>
             </button>
             <form className="track-pop" onSubmit={go}>
-              <label htmlFor="track-id">Номер заявки</label>
+              <label htmlFor="track-id">Order number</label>
               <div className="track-row">
                 <input id="track-id" value={id} onChange={(e) => setId(e.target.value)} placeholder="EX-XXXXXX" autoComplete="off" />
-                <button className="btn btn-primary sm">Найти</button>
+                <button className="btn btn-primary sm">Find</button>
               </div>
             </form>
           </div>
-          <Link href="/#swap" className="btn btn-primary sm hide-s">Обменять</Link>
-          <button className="burger" onClick={() => setOpen(!open)} aria-label="Меню" aria-expanded={open}>
+          <Link href="/#swap" className="btn btn-primary sm hide-s">Swap now</Link>
+          <button className="burger" onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}>
             <span />
             <span />
           </button>
@@ -81,7 +81,7 @@ export default function Header() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14m-5-5l5 5-5 5" /></svg>
           </Link>
         ))}
-        <Link href="/order" className="btn btn-primary" onClick={() => setOpen(false)} tabIndex={open ? 0 : -1}>Мои заявки</Link>
+        <Link href="/order" className="btn btn-primary" onClick={() => setOpen(false)} tabIndex={open ? 0 : -1}>My orders</Link>
       </div>
     </header>
   );

@@ -10,12 +10,12 @@ import Widget from "@/components/Widget";
 import { FAQ } from "@/lib/faq";
 
 const WHY = [
-  { t: "Без аккаунта", d: "Ни логина, ни пароля, ни почты. Номер заявки — всё, что нужно.", ic: "M12 12a4 4 0 100-8 4 4 0 000 8zM4 20c1.5-3.5 4.5-5 8-5M16 16l5 5m0-5l-5 5", big: true },
-  { t: "Фикс на 30 минут", d: "Закрепите курс и получите ровно ту сумму, что видели в калькуляторе.", ic: "M12 7v5l3 2M12 21a9 9 0 110-18 9 9 0 010 18z" },
-  { t: "Гарантия возврата", d: "Если обмен не состоялся — монеты вернутся на ваш адрес.", ic: "M3 12a9 9 0 103-6.7L3 8M3 3v5h5" },
-  { t: "Живые люди 24/7", d: "Поддержка в Telegram отвечает в среднем за 3 минуты — без ботов-автоответчиков.", ic: "M4 5h16v11H8l-4 4V5zM8 10h8M8 13h5" },
-  { t: "Прозрачный AML", d: "Проверяем только рискованные транзакции и честно объясняем, почему.", ic: "M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3zM9 12l2 2 4-4" },
-  { t: "До $250 000 за раз", d: "Крупнее — через OTC-менеджера с персональным курсом.", ic: "M3 17l6-6 4 4 8-8M15 7h6v6", big: true },
+  { t: "No account", d: "No login, no password, no e-mail. Your order number is all you need.", ic: "M12 12a4 4 0 100-8 4 4 0 000 8zM4 20c1.5-3.5 4.5-5 8-5M16 16l5 5m0-5l-5 5", big: true },
+  { t: "Locked for 30 minutes", d: "Fix the rate and get exactly the amount you saw in the calculator.", ic: "M12 7v5l3 2M12 21a9 9 0 110-18 9 9 0 010 18z" },
+  { t: "Refund guarantee", d: "If a swap can’t go through, your coins go back to your address.", ic: "M3 12a9 9 0 103-6.7L3 8M3 3v5h5" },
+  { t: "Real people, 24/7", d: "Telegram support replies in about 3 minutes on average — no auto-reply bots.", ic: "M4 5h16v11H8l-4 4V5zM8 10h8M8 13h5" },
+  { t: "Transparent AML", d: "We only review high-risk transactions and tell you honestly why.", ic: "M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3zM9 12l2 2 4-4" },
+  { t: "Up to $250,000 per swap", d: "Larger amounts go through an OTC manager with a personal rate.", ic: "M3 17l6-6 4 4 8-8M15 7h6v6", big: true },
 ];
 
 export default function Home() {
@@ -28,32 +28,32 @@ export default function Home() {
           <div className="hero-copy">
             <LiveBadge />
             <h1 className="hero-title">
-              <span className="ln"><span>Обмен крипты</span></span>
-              <span className="ln"><span>и вывод на</span></span>
-              <span className="ln"><Rotator words={["карту", "IBAN", "Wise", "наличные", "USDT"]} /></span>
+              <span className="ln"><span>Swap crypto.</span></span>
+              <span className="ln"><span>Cash out to</span></span>
+              <span className="ln"><Rotator words={["your card", "IBAN", "Wise", "cash", "USDT"]} /></span>
             </h1>
             <p className="hero-sub">
-              Exol Swap меняет 30 монет между собой и выплачивает фиат на карту Visa / Mastercard в 9 валютах.
-              Без регистрации, с фиксированным курсом на 30 минут.
+              Exol Swap exchanges 30 coins and pays out fiat to Visa / Mastercard cards in 9 currencies.
+              No sign-up, with a rate you can lock for 30 minutes.
             </p>
             <ul className="hero-trust">
-              <li><b><CountUp to={2} />–15</b> минут на обмен</li>
-              <li><b><CountUp to={0.5} decimals={1} suffix="%" /></b> спред плавающего курса</li>
-              <li><b>24/7</b> поддержка в Telegram</li>
+              <li><b><CountUp to={2} />–15</b> minutes per swap</li>
+              <li><b><CountUp to={0.5} decimals={1} suffix="%" /></b> floating-rate spread</li>
+              <li><b>24/7</b> Telegram support</li>
             </ul>
           </div>
           <div className="hero-widget">
             <Widget />
           </div>
         </div>
-        <a href="#routes" className="scroll-cue" aria-label="Листать вниз"><span /></a>
+        <a href="#routes" className="scroll-cue" aria-label="Scroll down"><span /></a>
       </section>
 
       <Ticker />
 
       <section className="sec" id="routes">
         <div className="wrap">
-          <SectionHead kicker="Два маршрута" title={<>Одна форма —<br />и крипта, и деньги на карте</>} />
+          <SectionHead kicker="Two routes" title={<>One form —<br />for crypto and for cash on your card</>} />
           <div className="routes">
             <article className="route spot" data-reveal>
               <div className="route-vis swapvis" aria-hidden>
@@ -62,11 +62,11 @@ export default function Home() {
                 <span className="sv-b"><CoinIcon sym="ETH" size={64} /></span>
                 <span className="sv-ring" />
               </div>
-              <span className="route-tag">Крипто ⇄ Крипто</span>
-              <h3>Меняйте монеты между сетями</h3>
-              <p>BTC в USDT на TRON, ETH в SOL, XMR в LTC — 30 монет и 20+ сетей, включая Lightning, TON, Arbitrum и Base.</p>
+              <span className="route-tag">Crypto ⇄ Crypto</span>
+              <h3>Swap coins across networks</h3>
+              <p>BTC to USDT on TRON, ETH to SOL, XMR to LTC — 30 coins and 20+ networks, including Lightning, TON, Arbitrum and Base.</p>
               <SwapLink className="route-link" query="from=BTC&to=USDT&tab=crypto">
-                Обменять BTC → USDT <span aria-hidden>→</span>
+                Swap BTC → USDT <span aria-hidden>→</span>
               </SwapLink>
             </article>
             <article className="route spot accent" data-reveal style={{ ["--d" as string]: "120ms" }}>
@@ -75,13 +75,13 @@ export default function Home() {
                 <span className="cv-drop d1"><CoinIcon sym="USDT" size={40} /></span>
                 <span className="cv-drop d2"><CoinIcon sym="BTC" size={40} /></span>
                 <span className="cv-drop d3"><CoinIcon sym="TON" size={40} /></span>
-                <span className="cv-sum mono">+ 1 250 €</span>
+                <span className="cv-sum mono">+ 1,250 €</span>
               </div>
-              <span className="route-tag">Крипто → Фиат</span>
-              <h3>Выводите деньги на карту</h3>
-              <p>Продайте USDT или BTC и получите евро, гривны, тенге или доллары на карту, IBAN, Wise — или наличными в офисе.</p>
+              <span className="route-tag">Crypto → Fiat</span>
+              <h3>Cash out to your card</h3>
+              <p>Sell USDT or BTC and receive euros, hryvnias, tenge or dollars on your card, IBAN or Wise — or pick up cash at an office.</p>
               <SwapLink className="route-link" query="from=USDT&cur=UAH&method=card">
-                Вывести USDT на карту <span aria-hidden>→</span>
+                Cash out USDT to a card <span aria-hidden>→</span>
               </SwapLink>
             </article>
           </div>
@@ -92,14 +92,14 @@ export default function Home() {
         <div className="wrap fiat-in">
           <div className="fiat-copy">
             <SectionHead
-              kicker="Вывод в фиат"
-              title={<>Крипта → <span className="grad">деньги на карте</span> за 30 минут</>}
-              sub="Четыре способа выплаты, девять валют. Комиссия и итоговая сумма — в калькуляторе до создания заявки, без сюрпризов на выходе."
+              kicker="Crypto → Fiat"
+              title={<>Crypto → <span className="grad">money on your card</span> in 30 minutes</>}
+              sub="Four payout methods, nine currencies. The fee and the final amount are shown in the calculator before you create an order — no surprises at the end."
             />
             <div data-reveal><FiatChips /></div>
             <div className="fiat-cta" data-reveal>
-              <Link href="/fiat" className="btn btn-primary">Подробнее о выводе</Link>
-              <SwapLink className="btn btn-ghost" query="from=USDT&cur=UAH&method=card">Рассчитать выплату</SwapLink>
+              <Link href="/fiat" className="btn btn-primary">More about payouts</Link>
+              <SwapLink className="btn btn-ghost" query="from=USDT&cur=UAH&method=card">Calculate a payout</SwapLink>
             </div>
           </div>
           <div className="fiat-vis" data-reveal>
@@ -113,7 +113,7 @@ export default function Home() {
 
       <section className="sec" id="how">
         <div className="wrap">
-          <SectionHead kicker="Как это работает" title="Четыре шага, ноль регистраций" center />
+          <SectionHead kicker="How it works" title="Four steps, zero sign-ups" center />
           <Steps />
         </div>
       </section>
@@ -121,8 +121,8 @@ export default function Home() {
       <section className="sec">
         <div className="wrap">
           <div className="sec-row">
-            <SectionHead kicker="Курсы" title="Рынок прямо сейчас" sub="Цены обновляются каждые 30 секунд. Нажмите «Обменять» — монета подставится в калькулятор." />
-            <Link href="/kursy" className="btn btn-ghost" data-reveal>Все 30 монет →</Link>
+            <SectionHead kicker="Rates" title="The market right now" sub="Prices refresh every 30 seconds. Hit “Swap” and the coin drops straight into the calculator." />
+            <Link href="/rates" className="btn btn-ghost" data-reveal>All 30 coins →</Link>
           </div>
           <div data-reveal><MarketTable limit={8} /></div>
         </div>
@@ -130,7 +130,7 @@ export default function Home() {
 
       <section className="sec">
         <div className="wrap">
-          <SectionHead kicker="Почему Exol Swap" title={<>Сделано для тех, кто<br />ценит время и приватность</>} />
+          <SectionHead kicker="Why Exol Swap" title={<>Built for people who<br />value time and privacy</>} />
           <div className="bento">
             {WHY.map((w, i) => (
               <article key={w.t} className={"bcard spot" + (w.big ? " big" : "")} data-reveal style={{ ["--d" as string]: `${i * 60}ms` }}>
@@ -148,8 +148,8 @@ export default function Home() {
       <section className="sec">
         <div className="wrap faq-wrap">
           <div>
-            <SectionHead kicker="FAQ" title="Частые вопросы" sub="Не нашли ответ? Поддержка в Telegram работает круглосуточно." />
-            <Link href="/faq" className="btn btn-ghost" data-reveal>Все вопросы →</Link>
+            <SectionHead kicker="FAQ" title="Common questions" sub="Can’t find an answer? Our Telegram support is open around the clock." />
+            <Link href="/faq" className="btn btn-ghost" data-reveal>All questions →</Link>
           </div>
           <FaqList items={FAQ.filter((_, i) => [0, 1, 5, 6, 10].includes(i))} />
         </div>

@@ -16,7 +16,7 @@ export default function Legal({ kicker, title, intro, sections }: { kicker: stri
               {s.p.map((t) => <p key={t}>{t}</p>)}
             </div>
           ))}
-          <p className="dim" style={{ marginTop: 48, fontSize: 13 }}>Шаблон документа. Финальную редакцию согласует юрист с учётом юрисдикции компании.</p>
+          <p className="dim" style={{ marginTop: 48, fontSize: 13 }}>Template document. The final version is to be approved by a lawyer for the company’s jurisdiction.</p>
         </div>
       </section>
     </>

@@ -27,13 +27,13 @@ export function CardMock() {
         <div className="card3d-shine" aria-hidden />
         <div className="card3d-top">
           <span className="card3d-brand"><LogoMark size={26} /><span>exol<b>swap</b></span></span>
-          <span className="card3d-paid">+ 12 480,00 ₴</span>
+          <span className="card3d-paid">+ 12,480.00 ₴</span>
         </div>
         <div className="card3d-chip" aria-hidden />
         <div className="card3d-num mono">4441 •••• •••• 2817</div>
         <div className="card3d-bottom">
           <span>
-            <small>Получатель</small>
+            <small>Card holder</small>
             OLENA KOVAL
           </span>
           <span className="card3d-mc" aria-hidden><i /><i /></span>
@@ -42,8 +42,8 @@ export function CardMock() {
       <div className="card3d-toast" aria-hidden>
         <span className="ok-dot">✓</span>
         <span>
-          <b>Выплата отправлена</b>
-          <small>290 USDT → карта · 11 мин</small>
+          <b>Payout sent</b>
+          <small>290 USDT → card · 11 min</small>
         </span>
       </div>
     </div>
@@ -62,8 +62,8 @@ export function Methods({ detailed }: { detailed?: boolean }) {
           <h3>{m.name}</h3>
           <p>{m.note}</p>
           <dl>
-            <div><dt>Комиссия</dt><dd className="mono">{(m.fee * 100).toFixed(1)}%{m.fixedUsd ? ` + $${m.fixedUsd}` : ""}</dd></div>
-            <div><dt>Лимит</dt><dd className="mono">${m.minUsd.toLocaleString("ru-RU")} – ${m.maxUsd.toLocaleString("ru-RU")}</dd></div>
+            <div><dt>Fee</dt><dd className="mono">{(m.fee * 100).toFixed(1)}%{m.fixedUsd ? ` + $${m.fixedUsd}` : ""}</dd></div>
+            <div><dt>Limit</dt><dd className="mono">${m.minUsd.toLocaleString("en-US")} – ${m.maxUsd.toLocaleString("en-US")}</dd></div>
           </dl>
           {detailed && <div className="mcard-cur">{m.currencies.map((c) => <span key={c}>{c}</span>)}</div>}
         </article>
@@ -74,7 +74,7 @@ export function Methods({ detailed }: { detailed?: boolean }) {
 
 export function FiatChips() {
   return (
-    <div className="fiat-chips" aria-label="Валюты выплаты">
+    <div className="fiat-chips" aria-label="Payout currencies">
       {FIATS.map((f) => (
         <span key={f.code} className="fchip">
           <b>{f.sign}</b> {f.code}
@@ -85,10 +85,10 @@ export function FiatChips() {
 }
 
 const STEPS = [
-  { t: "Выберите пару", d: "Монету, сеть и тип курса — фиксированный на 30 минут или плавающий по рынку." },
-  { t: "Укажите, куда платить", d: "Адрес кошелька, карту, IBAN или Wise. Номер заявки появится сразу." },
-  { t: "Отправьте депозит", d: "Переведите монеты на выданный адрес. Статус обновляется по каждому подтверждению." },
-  { t: "Получите средства", d: "Обмен и выплата — автоматически. Обычно 2–15 минут, на карту — до 30." },
+  { t: "Pick a pair", d: "Coin, network and rate type — fixed for 30 minutes or floating with the market." },
+  { t: "Tell us where to pay", d: "A wallet address, card, IBAN or Wise. You get an order number right away." },
+  { t: "Send your deposit", d: "Transfer the coins to the address shown. We check the deposit as soon as you mark it sent." },
+  { t: "Get paid", d: "Usually 2–15 minutes, up to 30 for card payouts." },
 ];
 
 export function Steps() {

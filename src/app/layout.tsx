@@ -8,17 +8,17 @@ import { getRates } from "@/lib/rates";
 import { SITE } from "@/lib/site";
 import { RatesProvider } from "@/lib/useRates";
 
-const display = Unbounded({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600", "700"], variable: "--f-display" });
-const body = Manrope({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600", "700", "800"], variable: "--f-body" });
-const mono = JetBrains_Mono({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600"], variable: "--f-mono" });
+const display = Unbounded({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--f-display" });
+const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--f-body" });
+const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--f-mono" });
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "Exol Swap — обмен криптовалют и вывод на карту", template: "%s — Exol Swap" },
-  description: "Мгновенный обмен 30 криптовалют без регистрации и вывод в фиат на карту Visa/Mastercard, IBAN, Wise или наличными. Фиксированный и плавающий курс.",
-  openGraph: { title: "Exol Swap", description: "Обмен криптовалют и вывод на карту", type: "website", locale: "ru_RU" },
+  title: { default: "Exol Swap — swap crypto and cash out to your card", template: "%s — Exol Swap" },
+  description: "Instant swaps between 30 cryptocurrencies with no sign-up, and fiat payouts to Visa/Mastercard cards, IBAN, Wise or cash. Fixed and floating rates.",
+  openGraph: { title: "Exol Swap", description: "Swap crypto and cash out to your card", type: "website", locale: "en_US" },
 };
 
 export const viewport: Viewport = { themeColor: "#05070d", colorScheme: "dark" };
@@ -26,7 +26,7 @@ export const viewport: Viewport = { themeColor: "#05070d", colorScheme: "dark" }
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const rates = await getRates();
   return (
-    <html lang="ru" className={`${display.variable} ${body.variable} ${mono.variable}`}>
+    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body>
         <RatesProvider initial={rates}>
           <Header />

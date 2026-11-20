@@ -61,7 +61,7 @@ export const COINS: Coin[] = [
   { sym: "LINK", name: "Chainlink", cg: "chainlink", color: "#2a5ada", glyph: "⬡", price: 8.39, change: -7.31, networks: [ERC20, BEP20, ARB] },
   { sym: "BCH", name: "Bitcoin Cash", cg: "bitcoin-cash", color: "#8dc351", glyph: "Ƀ", price: 191.49, change: -7.69, networks: [net("bch", "Bitcoin Cash", 0.02, 6, "bch")] },
   { sym: "XLM", name: "Stellar", cg: "stellar", color: "#7d8ca3", glyph: "✦", price: 0.127, change: -5.0, networks: [net("xlm", "Stellar", 0.01, 1, "xlm", true)] },
-  { sym: "ZEC", name: "Zcash", cg: "zcash", color: "#ecb244", glyph: "ⓩ", price: 769.29, change: -15.45, networks: [net("zec", "Zcash (t-адрес)", 0.05, 10, "zec")] },
+  { sym: "ZEC", name: "Zcash", cg: "zcash", color: "#ecb244", glyph: "ⓩ", price: 769.29, change: -15.45, networks: [net("zec", "Zcash (t-address)", 0.05, 10, "zec")] },
   { sym: "NEAR", name: "NEAR Protocol", cg: "near", color: "#00ec97", glyph: "Ⓝ", price: 2.85, change: -13.06, networks: [net("near", "NEAR", 0.02, 1, "near")] },
   { sym: "SUI", name: "Sui", cg: "sui", color: "#4da2ff", glyph: "∿", price: 0.649, change: -9.42, networks: [net("sui", "Sui", 0.02, 1, "apt")] },
   { sym: "APT", name: "Aptos", cg: "aptos", color: "#2ed8a7", glyph: "≋", price: 0.3712, change: -10.88, networks: [net("apt", "Aptos", 0.02, 1, "apt")] },

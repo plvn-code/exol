@@ -26,7 +26,7 @@ export function quoteCrypto(r: Rates, from: string, to: string, toNet: Network, 
   const pt = r.prices[to] ?? coin(to).price;
   const minIn = (MIN_SWAP_USD + toNet.feeUsd) / pf;
   const maxIn = MAX_SWAP_USD / pf;
-  if (from === to) return empty(minIn, maxIn, "Выберите разные монеты");
+  if (from === to) return empty(minIn, maxIn, "Pick two different coins");
   const rate = (pf / pt) * (1 - SPREAD[mode]);
   if (!(amount > 0)) return { ...empty(minIn, maxIn), rate };
   const usd = amount * pf;

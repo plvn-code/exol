@@ -45,7 +45,7 @@ export function Ticker() {
       );
     });
   return (
-    <div className="ticker" aria-label="Курсы монет">
+    <div className="ticker" aria-label="Coin prices">
       <div className="ticker-track">
         {items(false)}
         <span className="ticker-dup" aria-hidden>{items(true)}</span>
@@ -56,7 +56,7 @@ export function Ticker() {
 
 type SortKey = "rank" | "price" | "change" | "volume";
 
-/** Market table: on the home page a top-N teaser, on /kursy the full searchable list. */
+/** Market table: on the home page a top-N teaser, on /rates the full searchable list. */
 export function MarketTable({ limit, search = false }: { limit?: number; search?: boolean }) {
   const r = useRates();
   const age = useAge(r.updated);
@@ -92,11 +92,11 @@ export function MarketTable({ limit, search = false }: { limit?: number; search?
   return (
     <div className="market">
       <div className="market-bar">
-        <span className={"live-dot" + (r.live ? "" : " off")}>{r.live ? `Live · обновлено ${age < 60 ? age + " с" : Math.round(age / 60) + " мин"} назад` : "Снимок курсов · live недоступен"}</span>
+        <span className={"live-dot" + (r.live ? "" : " off")}>{r.live ? `Live · updated ${age < 60 ? age + "s" : Math.round(age / 60) + " min"} ago` : "Rates snapshot · live feed unavailable"}</span>
         {search && (
           <label className="sheet-search small">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск монеты" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search coin" />
           </label>
         )}
       </div>
@@ -105,11 +105,11 @@ export function MarketTable({ limit, search = false }: { limit?: number; search?
           <thead>
             <tr>
               {th("rank", "#", "num")}
-              <th>Монета</th>
-              {th("price", "Цена", "r")}
-              {th("change", "24ч", "r")}
-              {th("volume", "Объём 24ч", "r hide-m")}
-              <th className="r hide-s">7 дней</th>
+              <th>Coin</th>
+              {th("price", "Price", "r")}
+              {th("change", "24h", "r")}
+              {th("volume", "Volume 24h", "r hide-m")}
+              <th className="r hide-s">7 days</th>
               <th />
             </tr>
           </thead>
@@ -131,7 +131,7 @@ export function MarketTable({ limit, search = false }: { limit?: number; search?
                 <td className="r mono dim hide-m">{volume ? compact(volume) : "—"}</td>
                 <td className="r hide-s"><Spark data={r.spark[c.sym]} up={change >= 0} /></td>
                 <td className="r">
-                  <SwapLink className="btn btn-ghost sm" query={`from=${c.sym}`}>Обменять</SwapLink>
+                  <SwapLink className="btn btn-ghost sm" query={`from=${c.sym}`}>Swap</SwapLink>
                 </td>
               </tr>
             ))}

@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import Legal from "@/components/Legal";
 
-export const metadata: Metadata = { title: "Условия использования" };
+export const metadata: Metadata = { title: "Terms of Use" };
 
 export default function Page() {
   return (
     <Legal
-      kicker="Документы"
-      title="Условия использования"
-      intro="Создавая заявку, вы соглашаетесь с этими условиями."
+      kicker="Legal"
+      title="Terms of Use"
+      intro="By creating an order you agree to these terms."
       sections={[
-        { h: "1. Сервис", p: ["Exol Swap — сервис мгновенного обмена цифровых активов и выплаты их эквивалента в фиатной валюте. Сервис не хранит средства пользователей: обмен выполняется по каждой заявке отдельно."] },
-        { h: "2. Курс", p: ["Плавающий курс определяется в момент получения нужного количества подтверждений депозита. Фиксированный курс действует 30 минут с момента создания заявки; если депозит пришёл позже или в другой сумме, заявка пересчитывается по текущему курсу."] },
-        { h: "3. Комиссии", p: ["Комиссия сервиса включена в курс и показывается в калькуляторе до создания заявки. Комиссия сети получения удерживается из суммы выплаты."] },
-        { h: "4. Ответственность пользователя", p: ["Пользователь отвечает за правильность адреса, сети, memo/tag и платёжных реквизитов. Средства, отправленные в неподдерживаемой сети или без обязательного memo, возвращаются по запросу в поддержку, если это технически возможно."] },
-        { h: "5. Возвраты", p: ["Если обмен невозможен, средства возвращаются на адрес возврата или адрес отправителя за вычетом комиссии сети."] },
+        { h: "1. The service", p: ["Exol Swap is an instant exchange service for digital assets and payouts of their equivalent in fiat currency. The service does not hold user funds: each order is executed separately."] },
+        { h: "2. Rates", p: ["A floating rate is set once the deposit reaches the required number of confirmations. A fixed rate is valid for 30 minutes from order creation; if the deposit arrives later or in a different amount, the order is recalculated at the current rate."] },
+        { h: "3. Fees", p: ["The service fee is included in the rate and shown in the calculator before you create an order. The payout network fee is deducted from the payout amount."] },
+        { h: "4. Your responsibility", p: ["You are responsible for entering the correct address, network, memo/tag and payment details. Funds sent on an unsupported network or without a required memo are returned on request to support, where technically possible."] },
+        { h: "5. Refunds", p: ["If a swap cannot be completed, funds are returned to the refund address or the sender address minus the network fee."] },
       ]}
     />
   );

@@ -38,7 +38,7 @@ export default function Picker({ kind, title, value, exclude, onPick, onClose }:
     const s = q.trim().toLowerCase();
     if (kind === "fiat") {
       return FIATS.filter((f) => !s || f.code.toLowerCase().includes(s) || f.name.toLowerCase().includes(s)).map((f) => ({
-        key: f.code, label: f.code, sub: f.name, right: (r.fx[f.code] ?? f.fx).toLocaleString("ru-RU", { maximumFractionDigits: 2 }) + " за $1", change: null as number | null,
+        key: f.code, label: f.code, sub: f.name, right: (r.fx[f.code] ?? f.fx).toLocaleString("en-US", { maximumFractionDigits: 2 }) + " per $1", change: null as number | null,
       }));
     }
     return COINS.filter((c) => !s || c.sym.toLowerCase().includes(s) || c.name.toLowerCase().includes(s)).map((c) => ({
@@ -51,13 +51,13 @@ export default function Picker({ kind, title, value, exclude, onPick, onClose }:
       <div className="sheet">
         <div className="sheet-head">
           <b>{title}</b>
-          <button className="icon-btn" onClick={onClose} aria-label="Закрыть">
+          <button className="icon-btn" onClick={onClose} aria-label="Close">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6l12 12M18 6L6 18" /></svg>
           </button>
         </div>
         <label className="sheet-search">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
-          <input ref={input} value={q} onChange={(e) => setQ(e.target.value)} placeholder={kind === "coin" ? "Название или тикер" : "Валюта"} />
+          <input ref={input} value={q} onChange={(e) => setQ(e.target.value)} placeholder={kind === "coin" ? "Name or ticker" : "Currency"} />
         </label>
         {kind === "coin" && !q && (
           <div className="sheet-pop">
@@ -84,7 +84,7 @@ export default function Picker({ kind, title, value, exclude, onPick, onClose }:
               </button>
             </li>
           ))}
-          {!items.length && <li className="sheet-empty">Ничего не найдено — напишите в поддержку, добавим монету.</li>}
+          {!items.length && <li className="sheet-empty">Nothing found — message support and we will add the coin.</li>}
         </ul>
       </div>
     </div>,

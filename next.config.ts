@@ -16,6 +16,9 @@ const csp = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    return [{ source: "/kursy", destination: "/rates", permanent: true }];
+  },
   async headers() {
     return [
       {
