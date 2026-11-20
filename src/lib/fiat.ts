@@ -59,3 +59,12 @@ export const METHODS: Method[] = [
 export const method = (id: string): Method => METHODS.find((m) => m.id === id) ?? METHODS[0];
 
 export const CASH_CITIES = ["Киев", "Варшава", "Алматы", "Тбилиси", "Стамбул", "Дубай"];
+
+/** Ukrainian banks for card payouts in UAH. */
+export type BankId = "mono" | "privat" | "other";
+export const UA_BANKS: { id: BankId; name: string; mark: string; bg: string; fg: string }[] = [
+  { id: "mono", name: "monobank", mark: "m", bg: "#0d0d0d", fg: "#ffffff" },
+  { id: "privat", name: "ПриватБанк", mark: "П", bg: "#5ba43a", fg: "#ffffff" },
+  { id: "other", name: "Другой банк", mark: "₴", bg: "#1b2a55", fg: "#cfe0ff" },
+];
+export const bankName = (id?: string) => UA_BANKS.find((b) => b.id === id)?.name;

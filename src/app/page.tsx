@@ -80,7 +80,7 @@ export default function Home() {
               <span className="route-tag">Крипто → Фиат</span>
               <h3>Выводите деньги на карту</h3>
               <p>Продайте USDT или BTC и получите евро, гривны, тенге или доллары на карту, IBAN, Wise — или наличными в офисе.</p>
-              <SwapLink className="route-link" query="from=USDT&cur=EUR&method=card">
+              <SwapLink className="route-link" query="from=USDT&cur=UAH&method=card">
                 Вывести USDT на карту <span aria-hidden>→</span>
               </SwapLink>
             </article>
@@ -151,7 +151,7 @@ export default function Home() {
             <SectionHead kicker="FAQ" title="Частые вопросы" sub="Не нашли ответ? Поддержка в Telegram работает круглосуточно." />
             <Link href="/faq" className="btn btn-ghost" data-reveal>Все вопросы →</Link>
           </div>
-          <FaqList items={FAQ.filter((_, i) => [0, 1, 5, 6, 9].includes(i))} />
+          <FaqList items={FAQ.filter((_, i) => [0, 1, 5, 6, 10].includes(i))} />
         </div>
       </section>
     </>

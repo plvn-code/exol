@@ -655,3 +655,20 @@ th.num, td.num { width: 48px; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   [data-reveal] { opacity: 1; transform: none; }
 }
+
+/* ───────── UA banks + deposit address ───────── */
+.banks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+.bank { display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 8px; border-radius: 11px; border: 1px solid var(--line); font-size: 12.5px; font-weight: 700; color: var(--muted); transition: 0.2s; white-space: nowrap; }
+.bank:hover { color: var(--text); border-color: var(--line-2); }
+.bank.on { color: var(--text); border-color: rgba(59, 123, 255, 0.7); background: linear-gradient(180deg, rgba(47, 107, 255, 0.2), rgba(47, 107, 255, 0.05)); }
+.bank-mark { flex: none; width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-size: 12px; font-weight: 800; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18); }
+.w-dep { margin-bottom: 14px; padding: 12px 14px; border-radius: 14px; background: rgba(4, 7, 16, 0.85); border: 1px dashed rgba(34, 211, 255, 0.45); animation: stage-in 0.5s var(--ease) both; }
+.w-dep.muted { border-color: var(--line-2); }
+.w-dep-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.w-dep-label b { color: var(--text); }
+.w-dep-addr { display: flex; align-items: center; gap: 8px; margin: 8px 0 6px; }
+.w-dep-addr code { flex: 1; min-width: 0; font-family: var(--f-mono); font-size: 13px; color: #cfe3ff; word-break: break-all; }
+.w-dep small { display: block; font-size: 11.5px; color: var(--dim); line-height: 1.45; }
+.warn-line { margin-top: 12px; font-size: 13px; color: #ffd79a; }
+.demo-note a { text-decoration: underline; text-underline-offset: 2px; }
+@media (max-width: 640px) { .bank { font-size: 11.5px; gap: 6px; } }

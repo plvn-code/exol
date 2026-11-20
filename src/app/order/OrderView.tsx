@@ -1,30 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CoinIcon, FiatIcon } from "@/components/Brand";
+import { CoinIcon } from "@/components/Brand";
+import CopyBtn from "@/components/CopyBtn";
 import { fiat, method } from "@/lib/fiat";
 import { amt, money } from "@/lib/format";
 import { getOrder, listOrders, saveOrder, type Order } from "@/lib/orders";
-
-const STEPS_CRYPTO = ["Ожидаем депозит", "Подтверждение в сети", "Обмен", "Отправка на ваш адрес", "Готово"];
-const STEPS_FIAT = ["Ожидаем депозит", "Подтверждение в сети", "Конвертация в фиат", "Выплата отправлена", "Деньги зачислены"];
-
-function Copy({ text }: { text: string }) {
-  const [ok, setOk] = useState(false);
-  return (
-    <button
-      className={"copy" + (ok ? " ok" : "")}
-      onClick={() => {
-        navigator.clipboard?.writeText(text).then(() => {
-          setOk(true);
-          setTimeout(() => setOk(false), 1500);
-        });
-      }}
-    >
-      {ok ? "Скопировано" : "Копировать"}
-    </button>
-  );
-}
+import { SITE } from "@/lib/site";
 
 export default function OrderView() {
   const [ready, setReady] = useState(false);
@@ -32,7 +14,8 @@ export default function OrderView() {
   const [list, setList] = useState<Order[]>([]);
   const [missing, setMissing] = useState("");
   const [now, setNow] = useState(0);
-  const [running, setRunning] = useState(false);
+  const [txid, setTxid] = useState("");
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("id");
@@ -48,18 +31,6 @@ export default function OrderView() {
     return () => clearInterval(t);
   }, []);
 
-  // Demo: walk the status timeline once the visitor "sends" the deposit.
-  useEffect(() => {
-    if (!running || !order || order.step >= 4) return;
-    const t = setTimeout(() => {
-      const next = { ...order, step: order.step + 1 };
-      saveOrder(next);
-      setOrder(next);
-      if (next.step >= 4) setRunning(false);
-    }, order.step === 0 ? 900 : 2200);
-    return () => clearTimeout(t);
-  }, [running, order]);
-
   if (!ready) return <div className="empty">Загрузка…</div>;
 
   if (!order) {
@@ -68,7 +39,10 @@ export default function OrderView() {
         {missing && (
           <div className="demo-note">
             <span>⚠</span>
-            <span>Заявка <b>{missing}</b> не найдена в этом браузере. В демо-режиме заявки хранятся только локально.</span>
+            <span>
+              Заявка <b>{missing}</b> не найдена в этом браузере. Напишите оператору в Telegram{" "}
+              <a href={SITE.telegram} target="_blank" rel="noopener noreferrer">{SITE.telegramHandle}</a> — он проверит статус по номеру.
+            </span>
           </div>
         )}
         <h2 style={{ fontSize: 24, marginBottom: 20 }}>Мои заявки</h2>
@@ -85,7 +59,7 @@ export default function OrderView() {
                     </small>
                   </span>
                 </span>
-                <span className={"st" + (o.step >= 4 ? " ok" : "")}>{o.step >= 4 ? "Завершена" : "В процессе"}</span>
+                <span className={"st" + (o.step >= 1 ? " ok" : "")}>{o.step >= 1 ? "Проверяется" : "Ждёт оплаты"}</span>
               </Link>
             ))}
           </div>
@@ -99,72 +73,111 @@ export default function OrderView() {
     );
   }
 
-  const steps = order.kind === "crypto" ? STEPS_CRYPTO : STEPS_FIAT;
   const left = Math.max(0, order.expires - now);
   const mm = String(Math.floor(left / 60000)).padStart(2, "0");
   const ss = String(Math.floor((left % 60000) / 1000)).padStart(2, "0");
   const outLabel = order.kind === "crypto" ? `${amt(order.out)} ${order.to}` : money(order.out, fiat(order.to).sign);
-  const via = order.kind === "crypto" ? order.toVia : method(order.toVia).name;
+  const via = order.kind === "crypto" ? order.toVia : method(order.toVia).name + (order.bank ? ` · ${order.bank}` : "");
+  const netShort = order.fromNet.replace(/ \(.+\)/, "");
+
+  const reportPaid = async () => {
+    setSending(true);
+    try {
+      await fetch("/api/order", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ event: "paid", id: order.id, amount: amt(order.amount), from: order.from, fromNet: order.fromNet, txid: txid.trim() || undefined, deposit: order.deposit }),
+      });
+    } catch {
+      /* operator still sees the deposit on the wallet */
+    }
+    const next = { ...order, step: 1, txid: txid.trim() || undefined };
+    saveOrder(next);
+    setOrder(next);
+    setSending(false);
+  };
+
+  const steps = [
+    { t: "Ожидаем оплату", d: `${amt(order.amount)} ${order.from} · ${netShort}` },
+    { t: "Проверяем поступление", d: "Обычно 1–5 минут после подтверждения сети" },
+    { t: order.kind === "crypto" ? "Отправляем вам " + order.to : "Выплата на " + (order.bank ?? method(order.toVia).short.toLowerCase()), d: outLabel },
+  ];
 
   return (
     <div className="wrap">
-      <div className="demo-note" data-reveal>
-        <span>⚠</span>
-        <span>
-          <b>Демо-режим.</b> Адрес ниже сгенерирован случайно и никому не принадлежит — не отправляйте на него средства. Нажмите «Симулировать оплату», чтобы увидеть, как меняется статус.
-        </span>
-      </div>
+      {!order.notified && (
+        <div className="demo-note">
+          <span>✉</span>
+          <span>
+            Чтобы ускорить выплату, напишите оператору в Telegram{" "}
+            <a href={SITE.telegram} target="_blank" rel="noopener noreferrer"><b>{SITE.telegramHandle}</b></a> номер заявки <b className="mono">{order.id}</b>
+            {order.kind === "fiat" ? " и номер карты для выплаты." : "."}
+          </span>
+        </div>
+      )}
       <div className="order">
         <div className="panel">
           {order.step === 0 ? (
             <>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 18 }}>
-                <h2 style={{ margin: 0 }}>Отправьте депозит</h2>
+                <h2 style={{ margin: 0 }}>Отправьте {order.from}</h2>
                 {order.mode === "fixed" && <span className="timer">⏱ {mm}:{ss}</span>}
               </div>
               <span className="lbl" style={{ marginTop: 0 }}>Сумма</span>
               <div className="dep-amount">
                 <CoinIcon sym={order.from} size={36} />
                 {amt(order.amount)} {order.from}
-                <Copy text={String(order.amount)} />
+                <CopyBtn text={String(order.amount)} />
               </div>
-              <span className="lbl">Адрес · сеть {order.fromNet}</span>
-              <div className="dep-addr">
-                <span>{order.deposit}</span>
-                <Copy text={order.deposit} />
-              </div>
-              {order.memo && (
+              {order.deposit ? (
                 <>
-                  <span className="lbl">Memo / Tag — обязательно</span>
+                  <span className="lbl">Адрес для оплаты · сеть {order.fromNet}</span>
                   <div className="dep-addr">
-                    <span>{order.memo}</span>
-                    <Copy text={order.memo} />
+                    <span>{order.deposit}</span>
+                    <CopyBtn text={order.deposit} />
                   </div>
+                  {order.memo && (
+                    <>
+                      <span className="lbl">Memo / Tag — обязательно</span>
+                      <div className="dep-addr">
+                        <span>{order.memo}</span>
+                        <CopyBtn text={order.memo} />
+                      </div>
+                    </>
+                  )}
+                  <p className="warn-line">
+                    Отправляйте только <b>{order.from}</b> в сети <b>{netShort}</b>. Монеты в другой сети не дойдут.
+                  </p>
+                  <label className="field" style={{ marginTop: 22 }}>
+                    <span className="field-label">Хеш транзакции (TxID) — необязательно</span>
+                    <input value={txid} onChange={(e) => setTxid(e.target.value)} placeholder="Ускорит проверку" spellCheck={false} />
+                  </label>
+                  <button className="btn btn-primary" style={{ width: "100%", marginTop: 4 }} onClick={reportPaid} disabled={sending}>
+                    {sending ? "Отправляем…" : "Я отправил(а)"}
+                  </button>
                 </>
+              ) : (
+                <div className="demo-note" style={{ marginTop: 22, marginBottom: 0 }}>
+                  <span>ℹ</span>
+                  <span>
+                    Адрес для {order.from} ({order.fromNet}) выдаёт оператор. Напишите в Telegram{" "}
+                    <a href={SITE.telegram} target="_blank" rel="noopener noreferrer"><b>{SITE.telegramHandle}</b></a> номер заявки <b className="mono">{order.id}</b>.
+                  </span>
+                </div>
               )}
-              <button className="btn btn-primary" style={{ width: "100%", marginTop: 28 }} onClick={() => setRunning(true)} disabled={running}>
-                {running ? "Ищем транзакцию…" : "Симулировать оплату"}
-              </button>
             </>
-          ) : order.step < 4 ? (
+          ) : (
             <div className="done-box">
               <div className="done-check" style={{ borderColor: "rgba(34,211,255,.5)", background: "rgba(34,211,255,.1)", color: "var(--cyan)" }}>
                 <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: "rot 1.2s linear infinite" }}><path d="M21 12a9 9 0 11-6.2-8.6" /></svg>
               </div>
-              <h2>{steps[order.step]}</h2>
-              <p className="dim">Страницу можно закрыть — статус сохранится по номеру заявки.</p>
-            </div>
-          ) : (
-            <div className="done-box">
-              <div className="done-check">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-              </div>
-              <h2>{order.kind === "crypto" ? "Обмен завершён" : "Выплата зачислена"}</h2>
-              <p className="dep-amount" style={{ justifyContent: "center", margin: "12px 0 8px" }}>
-                {order.kind === "crypto" ? <CoinIcon sym={order.to} size={34} /> : <FiatIcon code={order.to} size={34} />} {outLabel}
+              <h2>Проверяем поступление</h2>
+              <p className="dim" style={{ maxWidth: 380, margin: "8px auto 0" }}>
+                Как только {amt(order.amount)} {order.from} придут на кошелёк, оператор отправит {outLabel} — {via}.
               </p>
-              <p className="dim">{via}</p>
-              <Link href="/#swap" className="btn btn-ghost" style={{ marginTop: 24 }}>Новый обмен</Link>
+              <a href={SITE.telegram} target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ marginTop: 24 }}>
+                Написать оператору
+              </a>
             </div>
           )}
         </div>
@@ -174,11 +187,11 @@ export default function OrderView() {
             <h2>Статус</h2>
             <ol className="tl">
               {steps.map((s, i) => (
-                <li key={s} className={i < order.step || order.step === 4 ? "done" : i === order.step ? "now" : ""}>
-                  <span className="tl-dot">{i < order.step || order.step === 4 ? "✓" : i + 1}</span>
+                <li key={s.t} className={i < order.step ? "done" : i === order.step ? "now" : ""}>
+                  <span className="tl-dot">{i < order.step ? "✓" : i + 1}</span>
                   <span>
-                    <b>{s}</b>
-                    {i === 1 && <small>Сеть {order.fromNet}</small>}
+                    <b>{s.t}</b>
+                    <small>{s.d}</small>
                   </span>
                 </li>
               ))}
@@ -193,6 +206,7 @@ export default function OrderView() {
               <div><dt>Получаете</dt><dd className="mono">{order.mode === "fixed" ? "" : "≈ "}{outLabel}</dd></div>
               <div><dt>{order.kind === "crypto" ? "Сеть" : "Способ"}</dt><dd>{via}</dd></div>
               <div><dt>Получатель</dt><dd className="mono" style={{ fontSize: 12.5 }}>{order.dest}</dd></div>
+              {order.txid && <div><dt>TxID</dt><dd className="mono" style={{ fontSize: 12 }}>{order.txid}</dd></div>}
               {order.email && <div><dt>E-mail</dt><dd>{order.email}</dd></div>}
               <div><dt>Создана</dt><dd>{new Date(order.created).toLocaleString("ru-RU")}</dd></div>
             </dl>

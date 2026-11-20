@@ -66,7 +66,7 @@ export default function Footer() {
         </div>
         <div className="ftr-bottom">
           <span>© {SITE.year} Exol Swap. Все права защищены.</span>
-          <span className="dim">Демо-версия: заявки хранятся только в вашем браузере, средства никуда не отправляются.</span>
+          <span className="dim">Мы никогда не просим CVV, пароли и seed-фразы.</span>
         </div>
       </div>
       <div className="ftr-word" aria-hidden>EXOL SWAP</div>

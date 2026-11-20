@@ -3,15 +3,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { coin } from "@/lib/coins";
-import { CASH_CITIES, fiat as getFiat, method as getMethod, METHODS, type MethodId } from "@/lib/fiat";
+import { depositFor } from "@/lib/deposit";
+import { bankName, CASH_CITIES, fiat as getFiat, method as getMethod, METHODS, UA_BANKS, type BankId, type MethodId } from "@/lib/fiat";
 import { amt, money, parseNum, usd } from "@/lib/format";
-import { demoAddress, demoMemo, newOrderId, saveOrder, type Order } from "@/lib/orders";
+import { newOrderId, saveOrder, type Order } from "@/lib/orders";
 import { FIXED_MINUTES, quoteCrypto, quoteFiat } from "@/lib/quote";
 import type { RateMode } from "@/lib/types";
 import { useRates } from "@/lib/useRates";
 import { cardBrand, formatCard, luhn, validAddress, validEmail, validIban } from "@/lib/validate";
 import { CoinIcon, FiatIcon, MethodIcon } from "./Brand";
 import { Num } from "./Num";
+import CopyBtn from "./CopyBtn";
 import Picker from "./Picker";
 
 export type Tab = "crypto" | "fiat";
@@ -26,13 +28,15 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
 
   const [tab, setTab] = useState<Tab>(initialTab);
   const [mode, setMode] = useState<RateMode>("float");
-  const [from, setFrom] = useState("BTC");
-  const [fromNet, setFromNet] = useState("btc");
-  const [amountStr, setAmountStr] = useState("0.05");
+  const [from, setFrom] = useState(initialTab === "fiat" ? "USDT" : "BTC");
+  const [fromNet, setFromNet] = useState(initialTab === "fiat" ? "trc20" : "btc");
+  const [amountStr, setAmountStr] = useState(initialTab === "fiat" ? "100" : "0.05");
   const [to, setTo] = useState("USDT");
   const [toNet, setToNet] = useState("trc20");
   const [cur, setCur] = useState("UAH");
   const [meth, setMeth] = useState<MethodId>("card");
+  const [bank, setBank] = useState<BankId>("mono");
+  const [sending, setSending] = useState(false);
   const [picker, setPicker] = useState<null | "from" | "to" | "cur">(null);
   const [stage, setStage] = useState<"quote" | "details">("quote");
   const [spin, setSpin] = useState(0);
@@ -87,6 +91,7 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
   const fromNetObj = fromCoin.networks.find((n) => n.id === fromNet) ?? fromCoin.networks[0];
   const toNetObj = toCoin.networks.find((n) => n.id === toNet) ?? toCoin.networks[0];
   const m = getMethod(meth);
+  const dep = depositFor(from, fromNetObj.id);
   const f = getFiat(cur);
   const amount = parseNum(amountStr);
 
@@ -144,7 +149,7 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
     if (meth === "wise") return validEmail(v) || /^@?[a-z0-9_.]{3,30}$/i.test(v) ? "" : "Укажите e-mail или @тег";
     return v.replace(/\D/g, "").length >= 9 || /^@[a-z0-9_]{4,}$/i.test(v) ? "" : "Телефон или @telegram для связи";
   })();
-  const holderErr = tab === "fiat" && meth !== "cash" && holder.trim().split(/\s+/).length < 2 ? "Имя и фамилия латиницей, как на карте/счёте" : "";
+  const holderErr = tab === "fiat" && meth !== "cash" && holder.trim().split(/\s+/).length < 2 ? "Укажите имя и фамилию получателя" : "";
   const refundErr = refund.trim() && !validAddress(fromNetObj.addr, refund) ? `Неверный адрес ${from}` : "";
   const emailErr = email.trim() && !validEmail(email) ? "Неверный e-mail" : "";
   const formOk = !destErr && !holderErr && !refundErr && !emailErr && agree;
@@ -152,17 +157,53 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
   const maskDest = () => {
     const v = dest.trim();
     if (tab === "crypto") return memo.trim() ? `${v} · memo ${memo.trim()}` : v;
-    if (meth === "card") return `${cardBrand(v) || "Карта"} •••• ${v.replace(/\D/g, "").slice(-4)} · ${holder.trim().toUpperCase()}`;
+    if (meth === "card") return `${(cur === "UAH" && bankName(bank)) || cardBrand(v) || "Карта"} •••• ${v.replace(/\D/g, "").slice(-4)} · ${holder.trim()}`;
     if (meth === "iban") return `${v.replace(/\s/g, "").slice(0, 4)} •••• ${v.replace(/\s/g, "").slice(-4)} · ${holder.trim()}`;
     if (meth === "wise") return `${v} · ${holder.trim()}`;
     return `${city} · ${v}`;
   };
 
-  const submit = () => {
+  const submit = async () => {
     setTried(true);
-    if (!formOk || !q.ok) return;
+    if (!formOk || !q.ok || sending) return;
+    setSending(true);
+    const id = newOrderId();
+    const v = dest.trim();
+    const isCard = tab === "fiat" && meth === "card";
+    const payload = {
+      event: "new",
+      id,
+      kind: tab,
+      mode,
+      from,
+      fromNet: fromNetObj.name,
+      amount: amt(amount),
+      to: tab === "crypto" ? to : cur,
+      via: tab === "crypto" ? toNetObj.name : m.name,
+      out: tab === "crypto" ? amt(q.out) : q.out.toFixed(2),
+      rate: tab === "crypto" ? amt(q.rate) : q.rate.toFixed(2),
+      bank: isCard && cur === "UAH" ? bankName(bank) : undefined,
+      card: isCard ? v : undefined,
+      iban: tab === "fiat" && meth === "iban" ? v : undefined,
+      account: tab === "fiat" && meth === "wise" ? v : undefined,
+      city: tab === "fiat" && meth === "cash" ? city : undefined,
+      contact: tab === "fiat" && meth === "cash" ? v : undefined,
+      holder: tab === "fiat" && meth !== "cash" ? holder.trim() : undefined,
+      address: tab === "crypto" ? v : undefined,
+      memo: tab === "crypto" ? memo.trim() || undefined : undefined,
+      deposit: dep?.address,
+      refund: refund.trim() || undefined,
+      email: email.trim() || undefined,
+    };
+    let notified = false;
+    try {
+      const res = await fetch("/api/order", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+      notified = res.ok && ((await res.json()) as { delivered?: boolean }).delivered === true;
+    } catch {
+      /* the order page tells the client to message the operator */
+    }
     const o: Order = {
-      id: newOrderId(),
+      id,
       created: Date.now(),
       kind: tab,
       mode,
@@ -174,9 +215,11 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
       out: q.out,
       rate: q.rate,
       dest: maskDest(),
-      deposit: demoAddress(fromNetObj.addr),
-      memo: fromNetObj.memo ? demoMemo() : undefined,
+      deposit: dep?.address,
+      memo: dep?.memo,
       email: email.trim() || undefined,
+      bank: payload.bank,
+      notified,
       step: 0,
       expires: Date.now() + FIXED_MINUTES * 60000,
     };
@@ -204,7 +247,16 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 7h11l-3-3M17 17H6l3 3" /></svg>
             Крипто ⇄ Крипто
           </button>
-          <button role="tab" aria-selected={tab === "fiat"} onClick={() => { setTab("fiat"); setStage("quote");}}>
+          <button role="tab" aria-selected={tab === "fiat"} onClick={() => {
+            setTab("fiat");
+            setStage("quote");
+            // Fiat payouts are mostly USDT (TRC-20) → card, so start from there.
+            if (!coin(from).stable) {
+              setFrom("USDT");
+              setFromNet("trc20");
+              setAmountStr("100");
+            }
+          }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="6" width="18" height="12" rx="2.5" /><path d="M3 10h18" /></svg>
             Вывод в фиат
           </button>
@@ -304,6 +356,16 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
                   ))}
                 </div>
               )}
+              {tab === "fiat" && meth === "card" && cur === "UAH" && (
+                <div className="banks" role="radiogroup" aria-label="Банк получателя">
+                  {UA_BANKS.map((b) => (
+                    <button key={b.id} role="radio" aria-checked={bank === b.id} className={"bank" + (bank === b.id ? " on" : "")} onClick={() => setBank(b.id)}>
+                      <span className="bank-mark" style={{ background: b.bg, color: b.fg }}>{b.mark}</span>
+                      {b.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <dl className="w-meta">
@@ -324,10 +386,10 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
             </dl>
 
             <button className="btn btn-primary w-go" disabled={!q.ok} onClick={goDetails}>
-              {tab === "crypto" ? "Обменять" : "Вывести на " + (meth === "card" ? "карту" : meth === "cash" ? "наличные" : m.short)}
+              {tab === "crypto" ? "Обменять" : "Вывести на " + (meth === "card" ? (cur === "UAH" && bank !== "other" ? "карту " + bankName(bank) : "карту") : meth === "cash" ? "наличные" : m.short)}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M5 12h14m-5-5l5 5-5 5" /></svg>
             </button>
-            <p className="w-foot">Без регистрации · Без скрытых комиссий · Демо-режим</p>
+            <p className="w-foot">Без регистрации · Без скрытых комиссий · Поддержка 24/7</p>
           </div>
         ) : (
           <div className="w-stage details" key="d">
@@ -344,6 +406,23 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
               </span>
             </div>
 
+            {dep ? (
+              <div className="w-dep">
+                <span className="w-dep-label">
+                  Отправьте <b className="mono">{amt(amount)} {from}</b> · сеть {fromNetObj.name}
+                </span>
+                <div className="w-dep-addr">
+                  <code>{dep.address}</code>
+                  <CopyBtn text={dep.address} />
+                </div>
+                <small>Только {from} в сети {fromNetObj.name.replace(/ \(.+\)/, "")}. Сначала создайте заявку — так мы поймём, куда выплатить.</small>
+              </div>
+            ) : (
+              <div className="w-dep muted">
+                <small>Адрес для {from} ({fromNetObj.name}) оператор пришлёт после создания заявки.</small>
+              </div>
+            )}
+
             {tab === "crypto" ? (
               <>
                 <Field label={`Адрес ${to} · ${toNetObj.name}`} err={tried ? destErr : ""}>
@@ -357,11 +436,11 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
               </>
             ) : meth === "card" ? (
               <>
-                <Field label="Номер карты" err={tried ? destErr : ""} badge={cardBrand(dest)}>
+                <Field label={cur === "UAH" && bank !== "other" ? `Номер карты ${bankName(bank)}` : "Номер карты"} err={tried ? destErr : ""} badge={cardBrand(dest)}>
                   <input value={dest} onChange={(e) => setDest(formatCard(e.target.value))} inputMode="numeric" placeholder="0000 0000 0000 0000" autoComplete="off" />
                 </Field>
-                <Field label="Имя на карте" err={tried ? holderErr : ""}>
-                  <input value={holder} onChange={(e) => setHolder(e.target.value.toUpperCase())} placeholder="IVAN PETRENKO" autoComplete="off" />
+                <Field label="Имя и фамилия получателя" err={tried ? holderErr : ""}>
+                  <input value={holder} onChange={(e) => setHolder(e.target.value)} placeholder={cur === "UAH" ? "Олена Коваль" : "Ivan Petrenko"} autoComplete="off" />
                 </Field>
               </>
             ) : meth === "iban" ? (
@@ -410,11 +489,11 @@ export default function Widget({ initialTab = "crypto", id = "swap" }: { initial
               </span>
             </label>
 
-            <button className="btn btn-primary w-go" onClick={submit}>
-              Создать заявку
+            <button className="btn btn-primary w-go" onClick={submit} disabled={sending}>
+              {sending ? "Отправляем…" : "Создать заявку"}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M5 12l5 5L20 7" /></svg>
             </button>
-            {tab === "fiat" && <p className="w-foot">Данные карты не сохраняются — в заявке остаются только последние 4 цифры.</p>}
+            {tab === "fiat" && <p className="w-foot">Номер карты получает только оператор для выплаты. CVV и срок действия не нужны — никому их не сообщайте.</p>}
           </div>
         )}
       </div>
